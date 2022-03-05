@@ -3,7 +3,7 @@ clear
 close all
 
 syms c1 
-dx=0.001;
+dx=0.01;
 x=0:dx:1;
 h=12;
 k=300;
