@@ -1,0 +1,45 @@
+clc
+clear
+close all 
+
+syms c1
+h = 12;
+k = 300;
+a = 0.01;
+p = 0.04;
+m = ((h.*p)./(k.*a)).^(0.5);
+c2 = 100;
+
+eqs = -k*(c1*m*cosh(m)+100*m*sinh(m)) == h*(c1*sinh(m)+100*cosh(m));
+[c1] = solve(eqs,c1);
+c1 = double(c1);
+
+pre=0;
+dx = [0.0001,0.00033,0.001,0.0033,0.01];
+for n = 1:length(dx)
+    x = 0:dx(n):1;
+ 
+    A = sparse(length(x),length(x));
+ 
+    for i = 2:length(x)-1
+        A(i,i-1)  =  1/dx(n)^2;
+        A(i,i)  =  (-2/dx(n)^2)-m^2;
+        A(i,i+1)  =  1/dx(n)^2;
+        
+    end
+  
+    A(1,1) = 1;
+    A(length(x),length(x)) = (1/dx(n))+h/k;
+    A(length(x),length(x)-1) = -(1/dx(n));
+    B = zeros(length(x),1);
+    B(1,1) = 100;
+
+    yn = A\B;
+
+er(n) = yn(end)-pre;
+pre=yn(end);
+end
+
+semilogx(dx(1:end-1),er(2:end),'.','markersize',20)
+ylabel('error','fontsi',20,'interpreter','latex')
+xlabel('dx','fontsi',20,'interpreter','latex')
